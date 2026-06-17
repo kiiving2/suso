@@ -518,6 +518,28 @@
             const predictedClassIndex = softmaxProbabilities.indexOf(Math.max(...softmaxProbabilities));
             const targetedConfidence = softmaxProbabilities[predictedClassIndex];
 
+            const ranked = [...softmaxProbabilities]
+    .map((prob, idx) => ({
+        label: labelNames[idx],
+        prob: prob
+    }))
+    .sort((a, b) => b.prob - a.prob);
+
+const top1 = ranked[0];
+const top2 = ranked[1];
+const top3 = ranked[2];
+
+const etcPercent = ranked
+    .slice(3)
+    .reduce((sum, item) => sum + item.prob, 0);
+
+document.getElementById('metrics-panel').innerHTML = `
+🏆 1위: ${top1.label} (${(top1.prob * 100).toFixed(1)}%)<br>
+🥈 2위: ${top2.label} (${(top2.prob * 100).toFixed(1)}%)<br>
+🥉 3위: ${top3.label} (${(top3.prob * 100).toFixed(1)}%)<br>
+📦 기타: ${(etcPercent * 100).toFixed(1)}%
+`;
+
             if (targetedConfidence > 0.92) {
                 frameSequenceCounter++;
                 if (frameSequenceCounter >= 25) {
