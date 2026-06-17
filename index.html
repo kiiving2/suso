@@ -67,10 +67,10 @@
         .brand-highlight { color: white; background-color: var(--accent); padding: 3px 10px; border-radius: 6px; font-weight: 700; }
         .text-highlight { color: var(--accent); font-weight: 700; }
 
-        /* 수정됨: 학습 사이드바가 빠졌으므로 통역 카메라가 한 줄을 꽉 채우도록 1fr로 변경 */
-        .app-layout { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        .app-layout { display: grid; grid-template-columns: 1fr 380px; gap: 25px; }
         .vision-box { background: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); text-align: center; }
        
+        /* 수정됨: 컨테이너에서 반전 적용 */
         .video-container { position: relative; width: 640px; height: 480px; margin: 0 auto; background: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: rotateY(180deg); }
         video, canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
 
@@ -97,7 +97,7 @@
         #system-status { font-weight: 700; color: var(--danger); margin-top: 10px; font-size: 13px; text-align: center; }
         .analytics { font-family: monospace; font-size: 12px; color: var(--text-muted); margin-top: 15px; text-align: left; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; line-height: 1.6; }
 
-        .sentence-board { grid-column: span 1; background: var(--card-bg); padding: 25px; border-radius: 16px; box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); margin-top: 10px; }
+        .sentence-board { grid-column: span 2; background: var(--card-bg); padding: 25px; border-radius: 16px; box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); margin-top: 10px; }
         .board-label { font-size: 13px; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; }
         .board-display { min-height: 54px; font-size: 26px; font-weight: 700; border-left: 5px solid var(--accent); padding-left: 15px; display: flex; align-items: center; background: #f8fafc; border-radius: 0 8px 8px 0; }
         .word-token { display: inline-block; background: var(--accent-light); color: var(--accent); padding: 5px 12px; border-radius: 6px; margin-right: 10px; font-size: 18px; font-weight: 700; border: 1px solid #bfdbfe; }
@@ -131,7 +131,7 @@
                 미래에는 기술의 도움 없이도 청인과 농인이 자유롭게 미소 지으며 대화할 수 있는 발전된 사회를 기대합니다.</p>
                 
                 <a href="#">
-                    <img src="https://img.lovepik.com/png/20231016/gesture-action-arm-finger-arms-sign-language-limbs_227105_wh860.png" alt="수어 일러스트" style="max-width: 200px;">
+                    <img src="https://www.bing.com/images/search?view=detailV2&ccid=ExOf2FU%2b&id=941F074039EEFB75D389805033A9F87CCEBD5988&thid=OIP.ExOf2FU-VX1XcpX50m2J3QHaHa&mediaurl=https%3a%2f%2fimg.lovepik.com%2fpng%2f20231016%2fgesture-action-arm-finger-arms-sign-language-limbs_227105_wh860.png&exph=860&expw=860&q=%ec%88%98%ec%96%b4+%ec%9d%bc%eb%9f%ac%ec%8a%a4%ed%8a%b8&FORM=IRPRST&ck=7D2A5C7D5799F6A20258A5FEA240054A&selectedIndex=95&itb=0" alt="수어 일러스트">
                 </a>
             </div>
         </div>
@@ -272,8 +272,8 @@
         async function initializeCoreEngines() {
             if (isEngineInitialized) return;
 
-            const metricsPanel = document.getElementById('metrics-panel');
-            if(metricsPanel) metricsPanel.innerText = "시스템: AI 핵심 신경망 로드 중...";
+            const statusElement = document.getElementById('system-status');
+            if(statusElement) statusElement.innerText = "시스템: AI 핵심 신경망 로드 중...";
 
             try {
                 handVisionEngine = new Hands({
@@ -293,16 +293,16 @@
                     aiModelCore = await tf.loadLayersModel('./suso-model.json');
                     isModelDeployed = true;
                    
-                    if(metricsPanel) {
-                        metricsPanel.innerText = "시스템: 🌐 클라우드 인공지능 통역 엔진 로드 완료!";
-                        metricsPanel.style.color = "var(--success)";
+                    if(statusElement) {
+                        statusElement.innerText = "시스템: 🌐 클라우드 인공지능 통역 엔진 로드 완료!";
+                        statusElement.style.color = "var(--success)";
                     }
                     renderCombinedHangeul();
                 } catch (loadErr) {
                     console.error("AI 모델 로딩 실패:", loadErr);
-                    if(metricsPanel) {
-                        metricsPanel.innerText = "시스템: ❌ 서버에서 AI 모델 파일을 찾을 수 없습니다.";
-                        metricsPanel.style.color = "var(--danger)";
+                    if(statusElement) {
+                        statusElement.innerText = "시스템: ❌ 서버에서 AI 모델 파일을 찾을 수 없습니다.";
+                        statusElement.style.color = "var(--danger)";
                     }
                     const sentenceOutput = document.getElementById('sentence-output');
                     if(sentenceOutput) sentenceOutput.innerText = "서버에 모델 파일이 없거나 경로가 올바르지 않습니다.";
@@ -311,11 +311,12 @@
                 isEngineInitialized = true;
             } catch (err) {
                 console.error(err);
+                const metricsPanel = document.getElementById('metrics-panel');
                 if(metricsPanel) metricsPanel.innerText = `엔진 초기화 실패: ${err.message}`;
             }
         }
 
-        // 통역기 카메라 시작
+        // 통역기(3번째 페이지) 카메라 시작
         function startTranslateCamera() {
             const videoElement = document.getElementById('webcam');
             if (cameraHardware) return;
@@ -342,7 +343,7 @@
             }
         }
 
-        // 학습 전용 카메라 렌더링 루프
+        // 학습(2번째 페이지) 전용 카메라 렌더링 루프 (AI 엔진 연결)
         async function processLearnFrame() {
             const video = document.getElementById('learn-camera');
             if (handVisionEngine && video && video.readyState >= 2 && document.getElementById('page-learn').classList.contains('active')) {
@@ -384,7 +385,7 @@
             stopLearnCamera();
         }
 
-        // 비전 그래픽 연산 파이프라인
+        // 비전 그래픽 연산 파이프라인 (통합)
         function processVisionPipeline(results) {
             const isTranslatePage = document.getElementById('page-translate').classList.contains('active');
 
@@ -399,6 +400,7 @@
                 results.multiHandLandmarks.forEach((landmarks, index) => {
                     const handMetadata = results.multiHandedness[index].label;
                    
+                    // 통역기 탭일 경우에만 손 뼈대 캔버스 렌더링
                     if (isTranslatePage && currentCanvasElement && currentCanvasCtx) {
                         for (const landmark of landmarks) {
                             const x = landmark.x * currentCanvasElement.width;
@@ -418,11 +420,20 @@
                     }
                 });
 
-                /* 자바스크립트 수집 파이프라인 기능 비활성화 */
+                /* 데이터 수신 메시지 출력 주석 처리 
                 if (isTranslatePage) {
                     const metricsPanel = document.getElementById('metrics-panel');
-                    if(metricsPanel) metricsPanel.innerText = `[엔진 작동 중] 실시간 통역이 준비되었습니다.`;
+                    if(metricsPanel) metricsPanel.innerText = `[데이터 수신 중] 총 학습 데이터량: ${datasetInput.length} 프레임셋 누적됨`;
                 }
+                */
+
+                /* 데이터 수집 로직 주석 처리
+                if (pipelineActive && isTranslatePage) {
+                    datasetInput.push(structuralFeatureVector);
+                    const activeTargetClass = parseInt(document.getElementById('class-selector').value);
+                    datasetTarget.push(activeTargetClass);
+                }
+                */
 
                 if (isModelDeployed && !pipelineActive) {
                     inferentialAnalysis(structuralFeatureVector);
@@ -439,6 +450,98 @@
             }
         }
 
+        window.executeDataPipeline = function() {
+            if (pipelineActive) return;
+           
+            const statusElement = document.getElementById('system-status');
+            const classId = parseInt(document.getElementById('class-selector').value);
+            pipelineActive = true;
+           
+            let durationCounter = 6;
+            const startIndex = datasetInput.length;
+
+            statusElement.innerText = `시스템: [${labelNames[classId]}] 데이터 녹화 중 (${durationCounter}s)...`;
+            statusElement.style.color = "var(--warning)";
+
+            const timer = setInterval(() => {
+                durationCounter--;
+                if (durationCounter <= 0) {
+                    clearInterval(timer);
+                    pipelineActive = false;
+                   
+                    const endIndex = datasetInput.length;
+                    recordingHistoryLog.push(endIndex - startIndex);
+
+                    statusElement.innerText = `시스템: [${labelNames[classId]}] 6초 녹화 완료! (현재 총 누적: ${datasetInput.length} 프레임)`;
+                    statusElement.style.color = "var(--success)";
+                    saveDataToLocal();
+                } else {
+                    statusElement.innerText = `시스템: [${labelNames[classId]}] 데이터 녹화 중 (${durationCounter}s)...`;
+                }
+            }, 1000);
+        };
+
+        window.undoLastRecording = function() {
+            const statusElement = document.getElementById('system-status');
+            if (recordingHistoryLog.length === 0) {
+                alert("취소할 수 있는 최근 수집 데이터가 존재하지 않습니다.");
+                return;
+            }
+           
+            const lastSessionCount = recordingHistoryLog.pop();
+           
+            datasetInput.splice(-lastSessionCount);
+            datasetTarget.splice(-lastSessionCount);
+           
+            statusElement.innerText = `시스템: ↩️ 방금 녹화된 ${lastSessionCount}개의 프레임셋을 제거했습니다. (남은 데이터: ${datasetInput.length}개)`;
+            statusElement.style.color = "var(--warning)";
+        }
+
+        window.compileAndTrainModel = async function() {
+            const statusElement = document.getElementById('system-status');
+            if (datasetInput.length === 0) {
+                alert("녹화된 데이터 스택이 비어있습니다. 수어 모션을 수집해 주세요.");
+                return;
+            }
+
+            statusElement.innerText = "시스템: 34채널 파라미터 최적화 신경망 학습 가동 중...";
+            statusElement.style.color = "var(--warning)";
+
+            const tensorX = tf.tensor2d(datasetInput);
+            const tensorY = tf.oneHot(tf.tensor1d(datasetTarget, 'int32'), 34);
+
+            aiModelCore = tf.sequential();
+            aiModelCore.add(tf.layers.dense({units: 256, activation: 'relu', inputShape: [126]}));
+            aiModelCore.add(tf.layers.dense({units: 128, activation: 'relu'}));
+            aiModelCore.add(tf.layers.dense({units: 64, activation: 'relu'}));
+            aiModelCore.add(tf.layers.dense({units: 34, activation: 'softmax'}));
+
+            aiModelCore.compile({ optimizer: tf.train.adam(0.001), loss: 'categoricalCrossentropy', metrics: ['accuracy'] });
+           
+            await aiModelCore.fit(tensorX, tensorY, {
+                epochs: 120,
+                batchSize: 32,
+                shuffle: true
+            });
+
+            isModelDeployed = true;
+            await aiModelCore.save('indexeddb://suso-model');
+
+            statusElement.innerText = "시스템: 🎉 하이퍼파라미터 최적화 완료 및 고정밀 가중치 로컬 백업 성공!";
+            statusElement.style.color = "var(--success)";
+            renderCombinedHangeul();
+        };
+
+        window.deleteSavedModel = async function() {
+            if(confirm("브라우저에 영구 보존된 가중치 모델 데이터를 완전 공장 초기화하시겠습니까?")) {
+                try {
+                    await tf.io.removeModel('indexeddb://suso-model');
+                    alert("성공적으로 제거되었습니다. 페이지가 리프레시됩니다.");
+                    location.reload();
+                } catch (err) { alert("삭제할 보존 파일 커널이 없습니다."); }
+            }
+        }
+
         async function inferentialAnalysis(features) {
             const inputTensor = tf.tensor2d([features]);
             const inferenceResult = aiModelCore.predict(inputTensor);
@@ -446,6 +549,7 @@
             const predictedClassIndex = softmaxProbabilities.indexOf(Math.max(...softmaxProbabilities));
             const targetedConfidence = softmaxProbabilities[predictedClassIndex];
 
+            // 깜빡임 방지: 현재 시간 측정 후 1초(1000ms) 경과 시에만 UI 업데이트
             const now = Date.now();
             if (now - lastRankUpdateTime >= 1000) {
                 const ranked = [...softmaxProbabilities]
@@ -467,6 +571,7 @@
                 lastRankUpdateTime = now;
             }
 
+            // 2번째 페이지 활성화 시에만 렌더링 업데이트 반영
             const learnMetrics = document.getElementById('learn-metrics-panel');
             if (learnMetrics && document.getElementById('page-learn').classList.contains('active')) {
                 learnMetrics.innerHTML = lastRankHTML;
@@ -560,9 +665,46 @@
         }
 
         window.onload = async () => {
-            // 초기 온로드 시 로컬 데이터 연동 대기 제외 (엔진 즉시 활성화)
-            const metricsPanel = document.getElementById('metrics-panel');
-            if (metricsPanel) metricsPanel.innerText = `[대기] 통역기 탭을 누르면 엔진이 구동됩니다.`;
+            await loadDataFromLocal(true);
+        };
+
+        async function saveDataToLocal() {
+            const dataToSave = {
+                input: datasetInput,
+                target: datasetTarget
+            };
+            try {
+                await localforage.setItem('suso_dataset', dataToSave);
+                console.log("🎯 데이터셋 저장 완료");
+            } catch (e) {
+                console.error("❌ 데이터 저장 실패: ", e);
+            }
+        }
+
+        async function loadDataFromLocal(isAutoLoad = false) {
+            try {
+                const savedData = await localforage.getItem('suso_dataset');
+                if (savedData) {
+                    datasetInput = savedData.input;
+                    datasetTarget = savedData.target;
+                   
+                    const metricsPanel = document.getElementById('metrics-panel');
+                    if (metricsPanel) {
+                        metricsPanel.innerText = `[복원 완료] 총 ${datasetInput.length} 프레임셋 로드됨.`;
+                    }
+                    if (!isAutoLoad) alert(`🔄 데이터 복원 완료! (${datasetInput.length}개 프레임셋)`);
+                }
+            } catch (e) {
+                console.error("데이터 로드 실패:", e);
+            }
+        }
+
+        window.exportAiModel = async function() {
+            if (!aiModelCore) {
+                alert("먼저 AI 훈련(학습)을 완료해 주세요!");
+                return;
+            }
+            await aiModelCore.save('downloads://suso-model');
         };
     </script>
 </body>
