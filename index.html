@@ -334,7 +334,9 @@
 
                try {
     // 🔗 indexeddb:// 대신 현재 폴더 안의 model/suso-model.json 경로를 바라보게 합니다.
-    aiModelCore = await tf.loadLayersModel('./model/suso-model.json');
+    aiModelCore = await tf.loadLayersModel(
+  'https://raw.githubusercontent.com/kiiving2/suso/main/model/suso-model.json'
+);
     isModelDeployed = true;
    
     statusElement.innerText = "시스템: 🌐 클라우드 인공지능 통역 엔진 로드 완료!";
