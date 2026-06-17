@@ -70,8 +70,9 @@
         .app-layout { display: grid; grid-template-columns: 1fr 380px; gap: 25px; }
         .vision-box { background: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); text-align: center; }
        
-        .video-container { position: relative; width: 640px; height: 480px; margin: 0 auto; background: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        video, canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform: rotateY(180deg); }
+        /* 수정됨: 컨테이너에서 반전 적용 */
+        .video-container { position: relative; width: 640px; height: 480px; margin: 0 auto; background: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: rotateY(180deg); }
+        video, canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
 
         .control-side { display: flex; flex-direction: column; gap: 20px; }
         .card { background: var(--card-bg); padding: 20px; border-radius: 16px; box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); border: 1px solid #f1f5f9; }
@@ -110,11 +111,11 @@
 <body>
 
     <header>
-        <h1 onclick="switchPage('home')">🤞 <span>수소</span><span class="brand-sub">| 수어로 소통하다</span></h1>
+        <h1 onclick="window.switchPage('home')">🤞 <span>수소</span><span class="brand-sub">| 수어로 소통하다</span></h1>
         <nav>
-            <button id="nav-home" class="active" onclick="switchPage('home')">🏠</button>
-            <button id="nav-learn" onclick="switchPage('learn')">수어를 배워보자!</button>
-            <button id="nav-translate" onclick="switchPage('translate')">우리의 소통을 도와줘!</button>
+            <button id="nav-home" class="active" onclick="window.switchPage('home')">🏠</button>
+            <button id="nav-learn" onclick="window.switchPage('learn')">수어를 배워보자!</button>
+            <button id="nav-translate" onclick="window.switchPage('translate')">우리의 소통을 도와줘!</button>
         </nav>
     </header>
 
@@ -137,7 +138,7 @@
         <div id="page-learn" class="page">
             <div class="playlist-select-box">
                 <label for="video-selector">📚 추천 가이드 수어 강좌</label>
-                <select id="video-selector" class="dataset-selector" style="width: 70%; margin-bottom:0;" onchange="changeLearnVideo(this.value)">
+                <select id="video-selector" class="dataset-selector" style="width: 70%; margin-bottom:0;" onchange="window.changeLearnVideo(this.value)">
                     <option value="1IDTB4KQ-Fk">[기초] 수어 지문자 배우기 "수화로 내 이름은?"</option>
                     <option value="eNq5M2rYzzc">[이론] 수어를 배울 때 가장 먼저 배우는 문법 '수어소'</option>
                     <option value="FS-FD0Q6uaM">[상식] 알아두면 쓸모있는 수어상식 (방향 기준)</option>
@@ -161,8 +162,8 @@
                 </div>
                 <div class="vision-box">
                     <h3 style="text-align: left;">📷 정밀 분석 미러 피드백</h3>
-                    <div style="height: 250px; background: #1e293b; border-radius: 12px; overflow:hidden; position:relative;">
-                        <video id="learn-camera" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;transform:rotateY(180deg);"></video>
+                    <div style="height: 250px; background: #1e293b; border-radius: 12px; overflow:hidden; position:relative; transform:rotateY(180deg);">
+                        <video id="learn-camera" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;"></video>
                     </div>
                     <div class="analytics" id="learn-metrics-panel" style="margin-top:25px; min-height: 80px;">AI 엔진을 로드하고 수어를 분석할 준비 중입니다...</div>
                 </div>
@@ -208,16 +209,16 @@
                             </optgroup>
                         </select>
 
-                        <button class="btn-cmd" onclick="executeDataPipeline()">📹 선택한 타겟 데이터 녹화 시작 (6초)</button>
-                        <button class="btn-undo" onclick="undoLastRecording()">↩️ 방금 녹화한 일부 데이터만 취소</button>
+                        <button class="btn-cmd" onclick="window.executeDataPipeline()">📹 선택한 타겟 데이터 녹화 시작 (6초)</button>
+                        <button class="btn-undo" onclick="window.undoLastRecording()">↩️ 방금 녹화한 일부 데이터만 취소</button>
                         <div id="system-status">시스템: 브라우저 로컬 저장소 스캔 대기...</div>
                     </div>
 
                     <div class="card">
                         <h3>🧠 인공지능 모델 제어 </h3>
                         <p style="font-size: 13px; color: var(--text-muted); margin-top:0;">신경망 가중치가 로컬 스토리지에 자동 보존됩니다.</p>
-                        <button class="btn-core" onclick="compileAndTrainModel()">🤖AI 훈련 가동 (120회/배치32)</button>
-                        <button class="btn-core" style="background: #8b5cf6;" onclick="exportAiModel()">📤 완성된 AI 모델 파일로 다운로드</button>
+                        <button class="btn-core" onclick="window.compileAndTrainModel()">🤖AI 훈련 가동 (120회/배치32)</button>
+                        <button class="btn-core" style="background: #8b5cf6;" onclick="window.exportAiModel()">📤 완성된 AI 모델 파일로 다운로드</button>
                     </div>
                 </div>
 
@@ -267,7 +268,7 @@
             "ㅏ", "ㅑ", "ㅓ", "ㅕ", "ㅗ", "ㅛ", "ㅜ", "ㅠ", "ㅡ", "ㅣ", "ㅐ", "ㅒ", "ㅔ", "ㅖ", "ㅘ", "ㅙ", "ㅚ", "ㅝ", "ㅞ", "ㅟ", "ㅢ"
         ];
 
-        function changeLearnVideo(videoId) {
+        window.changeLearnVideo = function(videoId) {
             const player = document.getElementById('youtube-player');
             const caption = document.getElementById('video-caption');
             const selector = document.getElementById('video-selector');
@@ -279,7 +280,7 @@
             }
         }
 
-        async function switchPage(pageId) {
+        window.switchPage = async function(pageId) {
             const allPages = document.querySelectorAll('.page');
             allPages.forEach(page => page.classList.remove('active'));
 
