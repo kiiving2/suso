@@ -67,6 +67,539 @@
         .brand-highlight { color: white; background-color: var(--accent); padding: 3px 10px; border-radius: 6px; font-weight: 700; }
         .text-highlight { color: var(--accent); font-weight: 700; }
 
+        /* 수정됨: 학습 사이드바가 빠졌으므로 통역 카메라가 한 줄을 꽉 채우도록 1fr로 변경 */
+        .app-layout { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        .vision-box { background: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); text-align: center; }
+       
+        .video-container { position: relative; width: 640px; height: 480px; margin: 0 auto; background: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: rotateY(180deg); }
+        video, canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+
+        .control-side { display: flex; flex-direction: column; gap: 20px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 16px; box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); border: 1px solid #f1f5f9; }
+        .card h3 { margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; font-size: 16px; color: var(--primary); }
+
+        .playlist-select-box {
+            grid-column: span 2; background: var(--card-bg); padding: 15px 20px; border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+        }
+       
+        .dataset-selector { width: 100%; padding: 10px 12px; font-size: 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px; font-weight: 600; background-color: #f8fafc; color: var(--text-main); outline: none; }
+
+        button { padding: 12px; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
+        .btn-cmd { background: var(--accent); color: white; width: 100%; margin-bottom: 6px; }
+        .btn-cmd:hover { background: #1d4ed8; }
+        .btn-undo { background: #f3f4f6; color: #374151; width: 100%; border: 1px solid #d1d5db; font-size: 13px; padding: 8px; }
+        .btn-undo:hover { background: #e5e7eb; }
+        .btn-core { background: var(--success); color: white; width: 100%; font-size: 15px; margin-bottom: 8px; }
+        .btn-core:hover { background: #059669; }
+        .btn-danger-clear { background: #fff1f2; color: var(--danger); width: 100%; border: 1px solid #fecdd3; font-size: 12px; padding: 6px; }
+       
+        #system-status { font-weight: 700; color: var(--danger); margin-top: 10px; font-size: 13px; text-align: center; }
+        .analytics { font-family: monospace; font-size: 12px; color: var(--text-muted); margin-top: 15px; text-align: left; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; line-height: 1.6; }
+
+        .sentence-board { grid-column: span 1; background: var(--card-bg); padding: 25px; border-radius: 16px; box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); margin-top: 10px; }
+        .board-label { font-size: 13px; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; }
+        .board-display { min-height: 54px; font-size: 26px; font-weight: 700; border-left: 5px solid var(--accent); padding-left: 15px; display: flex; align-items: center; background: #f8fafc; border-radius: 0 8px 8px 0; }
+        .word-token { display: inline-block; background: var(--accent-light); color: var(--accent); padding: 5px 12px; border-radius: 6px; margin-right: 10px; font-size: 18px; font-weight: 700; border: 1px solid #bfdbfe; }
+        .demo-bar { margin-top: 15px; background: #fffbeb; border: 1px solid #fde68a; padding: 12px; border-radius: 10px; color: #92400e; font-size: 14px; text-align: center; }
+       
+        .learn-split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .youtube-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; background: #000; }
+        .youtube-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 onclick="window.switchPage('home')">🤞 <span>수소</span><span class="brand-sub">| 수어로 소통하다</span></h1>
+        <nav>
+            <button id="nav-home" class="active" onclick="window.switchPage('home')">🏠</button>
+            <button id="nav-learn" onclick="window.switchPage('learn')">수어를 배워보자!</button>
+            <button id="nav-translate" onclick="window.switchPage('translate')">우리의 소통을 도와줘!</button>
+        </nav>
+    </header>
+
+    <div class="container">
+       
+     <div id="page-home" class="page active">
+            <div class="intro-card">
+                <h2>청인과 농인의 장벽을 허무는 작은 시작</h2>
+                <p>농인 학생들 중 수어를 몰라 구어로만 소통하며 큰 어려움을 겪는 학생들이 많습니다.<br>
+                동시에, 수어에 깊은 관심이 있어도 구체적인 체계가 없어 배움을 시작하지 못하는 청인 학생들도 존재합니다.</p>
+                <p>'수어로 소통하다'라는 의미를 담은 <span class="brand-highlight">수소</span>는 이들에게 체계적인 <span class="text-highlight">수어 학습 기능</span>과 실시간 <span class="text-highlight">수어 통역 시스템</span>을 동시에 제공합니다.</p>
+                <p>단순한 일회성 통역을 넘어 많은 사람들이 스스로 수어를 학습하고 소통하여,<br>
+                미래에는 기술의 도움 없이도 청인과 농인이 자유롭게 미소 지으며 대화할 수 있는 발전된 사회를 기대합니다.</p>
+                
+                <a href="#">
+                    <img src="https://img.lovepik.com/png/20231016/gesture-action-arm-finger-arms-sign-language-limbs_227105_wh860.png" alt="수어 일러스트" style="max-width: 200px;">
+                </a>
+            </div>
+        </div>
+
+        <div id="page-learn" class="page">
+            <div class="playlist-select-box">
+                <label for="video-selector">📚 추천 가이드 수어 강좌</label>
+                <select id="video-selector" class="dataset-selector" style="width: 70%; margin-bottom:0;" onchange="window.changeLearnVideo(this.value)">
+                    <option value="1IDTB4KQ-Fk">[기초] 수어 지문자 배우기 "수화로 내 이름은?"</option>
+                    <option value="eNq5M2rYzzc">[이론] 수어를 배울 때 가장 먼저 배우는 문법 '수어소'</option>
+                    <option value="FS-FD0Q6uaM">[상식] 알아두면 쓸모있는 수어상식 (방향 기준)</option>
+                    <option value="28kn2IQEWRk" selected>수어쉬워 1강: "첫 만남 & 소개" (인사, 이름 물어보기)</option>
+                    <option value="ZwSdDLzcRoM">수어쉬워 2강: "색상" (색 표현 및 공간 정보)</option>
+                    <option value="5xiuZ2fvTYU">수어쉬워 3강: "날씨와 계절" (날씨 상태 표현)</option>
+                    <option value="1JyJwc_Hd8U">수어쉬워 4강: "가족과 일상" (가족 관계 및 일상 단어)</option>
+                    <option value="dy5O9q5IxiI">수어쉬워 5강: "학교와 개강" (학교 환경 및 과목)</option>
+                    <option value="C2jT4CAzTvM">수어쉬워 6강: "동물" (동물 특징 묘사 표현)</option>
+                    <option value="A-nf3BQtUzY">수어쉬워 7강: "음식" (먹거리와 맛 표현)</option>
+                    <option value="K08roWfuSJU">수어쉬워 8강: "시제" (과거·현재·미래 시제 표현)</option>
+                </select>
+            </div>
+            <div class="learn-split">
+                <div class="vision-box">
+                    <h3 style="text-align: left;">📺 수어 강좌 시청</h3>
+                    <div class="youtube-container">
+                        <iframe id="youtube-player" src="https://www.youtube.com/embed/28kn2IQEWRk?rel=0&modestbranding=1&enablejsapi=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <p id="video-caption" style="font-size: 13px; color: var(--text-muted); margin-top: 15px; margin-bottom: 0;">영상을 보며 수어를 차근차근 따라 해보세요!</p>
+                </div>
+                <div class="vision-box">
+                    <h3 style="text-align: left;">📷 정밀 분석 미러 피드백</h3>
+                    <div style="height: 250px; background: #1e293b; border-radius: 12px; overflow:hidden; position:relative; transform:rotateY(180deg);">
+                        <video id="learn-camera" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;"></video>
+                    </div>
+                    <div class="analytics" id="learn-metrics-panel" style="margin-top:25px; min-height: 80px;">AI 엔진을 로드하고 수어를 분석할 준비 중입니다...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-translate" class="page">
+            <div class="app-layout">
+                <div class="vision-box">
+                    <div class="video-container">
+                        <video id="webcam" autoplay playsinline muted></video>
+                        <canvas id="output_canvas" width="640" height="480"></canvas>
+                    </div>
+                    <div class="analytics" id="metrics-panel">시스템 API 엔진 초기화 로드 대기 중...</div>
+                </div>
+
+                <div class="sentence-board">
+                    <div class="board-label">🗣️ Real-time Sign Language Translation </div>
+                    <div class="board-display" id="sentence-output">통역기 탭을 누르면 비전 엔진이 활성화됩니다.</div>
+                    <div class="demo-bar">
+                        ✨ <strong>초성·중성·종성 결합 안내:</strong> 카메라 앞에서 <code>ㄱ</code>, <code>ㅏ</code>, <code>ㅁ</code>을 순서대로 취하면 <strong>'감'</strong>으로 자동 결합됩니다. [주먹]을 쥐면 전체 삭제됩니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 전역 변수 설정
+        let handVisionEngine = null;
+        let isEngineInitialized = false;
+        let cameraHardware = null;
+        let learnCameraStream = null;
+        let learnRafId = null;
+
+        let currentCanvasElement = null;
+        let currentCanvasCtx = null;
+
+        let datasetInput = [];
+        let datasetTarget = [];
+       
+        let recordingHistoryLog = [];
+        let pipelineActive = false;
+        let aiModelCore;
+        let isModelDeployed = false;
+
+        let frameSequenceCounter = 0;
+        let lastRegisteredToken = "";
+       
+        let rawSyllableTokens = [];
+
+        // UI 업데이트 제어용 변수
+        let lastRankUpdateTime = 0;
+        let lastRankHTML = "수어 동작을 취하면 분석 결과가 여기에 표시됩니다.";
+
+        const labelNames = [
+            "안녕하세요", "감사합니다", "문장삭제",
+            "ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ",
+            "ㅏ", "ㅑ", "ㅓ", "ㅕ", "ㅗ", "ㅛ", "ㅜ", "ㅠ", "ㅡ", "ㅣ", "ㅐ", "ㅒ", "ㅔ", "ㅖ", "ㅘ", "ㅙ", "ㅚ", "ㅝ", "ㅞ", "ㅟ", "ㅢ"
+        ];
+
+        window.changeLearnVideo = function(videoId) {
+            const player = document.getElementById('youtube-player');
+            const caption = document.getElementById('video-caption');
+            const selector = document.getElementById('video-selector');
+            const selectedText = selector.options[selector.selectedIndex].text;
+
+            if (player && caption) {
+                player.src = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1`;
+                caption.innerHTML = `영상을 보며 <strong>${selectedText}</strong> 단계를 차근차근 따라 해보세요!`;
+            }
+        }
+
+        window.switchPage = async function(pageId) {
+            const allPages = document.querySelectorAll('.page');
+            allPages.forEach(page => page.classList.remove('active'));
+
+            const allButtons = document.querySelectorAll('nav button');
+            allButtons.forEach(btn => btn.classList.remove('active'));
+
+            const targetPage = document.getElementById(`page-${pageId}`);
+            const targetBtn = document.getElementById(`nav-${pageId}`);
+           
+            if (targetPage && targetBtn) {
+                targetPage.classList.add('active');
+                targetBtn.classList.add('active');
+            }
+
+            // 페이지별 카메라 및 엔진 제어
+            if (pageId === 'translate') {
+                stopLearnCamera();
+                await initializeCoreEngines();
+                startTranslateCamera();
+            } else if (pageId === 'learn') {
+                stopTranslateCamera();
+                await initializeCoreEngines();
+                startLearnCamera();
+            } else {
+                stopAiCameras();
+            }
+        }
+
+        // 공통 AI 엔진 및 모델 초기화
+        async function initializeCoreEngines() {
+            if (isEngineInitialized) return;
+
+            const metricsPanel = document.getElementById('metrics-panel');
+            if(metricsPanel) metricsPanel.innerText = "시스템: AI 핵심 신경망 로드 중...";
+
+            try {
+                handVisionEngine = new Hands({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+                });
+               
+                handVisionEngine.setOptions({
+                    maxNumHands: 2,
+                    modelComplexity: 1,
+                    minDetectionConfidence: 0.75,
+                    minTrackingConfidence: 0.75
+                });
+                handVisionEngine.onResults(processVisionPipeline);
+
+                try {
+                    // 서버 또는 로컬 경로 모델 로드
+                    aiModelCore = await tf.loadLayersModel('./suso-model.json');
+                    isModelDeployed = true;
+                   
+                    if(metricsPanel) {
+                        metricsPanel.innerText = "시스템: 🌐 클라우드 인공지능 통역 엔진 로드 완료!";
+                        metricsPanel.style.color = "var(--success)";
+                    }
+                    renderCombinedHangeul();
+                } catch (loadErr) {
+                    console.error("AI 모델 로딩 실패:", loadErr);
+                    if(metricsPanel) {
+                        metricsPanel.innerText = "시스템: ❌ 서버에서 AI 모델 파일을 찾을 수 없습니다.";
+                        metricsPanel.style.color = "var(--danger)";
+                    }
+                    const sentenceOutput = document.getElementById('sentence-output');
+                    if(sentenceOutput) sentenceOutput.innerText = "서버에 모델 파일이 없거나 경로가 올바르지 않습니다.";
+                }
+
+                isEngineInitialized = true;
+            } catch (err) {
+                console.error(err);
+                if(metricsPanel) metricsPanel.innerText = `엔진 초기화 실패: ${err.message}`;
+            }
+        }
+
+        // 통역기 카메라 시작
+        function startTranslateCamera() {
+            const videoElement = document.getElementById('webcam');
+            if (cameraHardware) return;
+
+            currentCanvasElement = document.getElementById('output_canvas');
+            currentCanvasCtx = currentCanvasElement ? currentCanvasElement.getContext('2d') : null;
+
+            cameraHardware = new Camera(videoElement, {
+                onFrame: async () => {
+                    if (handVisionEngine && videoElement && document.getElementById('page-translate').classList.contains('active')) {
+                        await handVisionEngine.send({image: videoElement});
+                    }
+                },
+                width: 640,
+                height: 480
+            });
+            cameraHardware.start();
+        }
+
+        function stopTranslateCamera() {
+            if (cameraHardware) { 
+                cameraHardware.stop(); 
+                cameraHardware = null; 
+            }
+        }
+
+        // 학습 전용 카메라 렌더링 루프
+        async function processLearnFrame() {
+            const video = document.getElementById('learn-camera');
+            if (handVisionEngine && video && video.readyState >= 2 && document.getElementById('page-learn').classList.contains('active')) {
+                await handVisionEngine.send({image: video});
+            }
+            if (document.getElementById('page-learn').classList.contains('active')) {
+                learnRafId = requestAnimationFrame(processLearnFrame);
+            }
+        }
+
+        async function startLearnCamera() {
+            const video = document.getElementById('learn-camera');
+            if (!video || learnCameraStream) return;
+
+            try {
+                learnCameraStream = await navigator.mediaDevices.getUserMedia({video:true});
+                video.srcObject = learnCameraStream;
+                video.onloadeddata = () => {
+                    processLearnFrame();
+                };
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function stopLearnCamera() {
+            if (learnCameraStream) {
+                learnCameraStream.getTracks().forEach(track => track.stop());
+                learnCameraStream = null;
+            }
+            if (learnRafId) {
+                cancelAnimationFrame(learnRafId);
+                learnRafId = null;
+            }
+        }
+
+        function stopAiCameras() {
+            stopTranslateCamera();
+            stopLearnCamera();
+        }
+
+        // 비전 그래픽 연산 파이프라인
+        function processVisionPipeline(results) {
+            const isTranslatePage = document.getElementById('page-translate').classList.contains('active');
+
+            if (isTranslatePage && currentCanvasElement && currentCanvasCtx) {
+                currentCanvasCtx.save();
+                currentCanvasCtx.clearRect(0, 0, currentCanvasElement.width, currentCanvasElement.height);
+            }
+           
+            let structuralFeatureVector = new Array(126).fill(0);
+
+            if (results.multiHandLandmarks && results.multiHandedness && results.multiHandLandmarks.length > 0) {
+                results.multiHandLandmarks.forEach((landmarks, index) => {
+                    const handMetadata = results.multiHandedness[index].label;
+                   
+                    if (isTranslatePage && currentCanvasElement && currentCanvasCtx) {
+                        for (const landmark of landmarks) {
+                            const x = landmark.x * currentCanvasElement.width;
+                            const y = landmark.y * currentCanvasElement.height;
+                            currentCanvasCtx.beginPath();
+                            currentCanvasCtx.arc(x, y, 4, 0, 2 * Math.PI);
+                            currentCanvasCtx.fillStyle = handMetadata === 'Left' ? '#ef4444' : '#2563eb';
+                            currentCanvasCtx.fill();
+                        }
+                    }
+
+                    const flattened = landmarks.flatMap(lm => [lm.x, lm.y, lm.z]);
+                    if (handMetadata === 'Left') {
+                        for(let i = 0; i < 63; i++) structuralFeatureVector[i] = flattened[i];
+                    } else if (handMetadata === 'Right') {
+                        for(let i = 0; i < 63; i++) structuralFeatureVector[63 + i] = flattened[i];
+                    }
+                });
+
+                /* 자바스크립트 수집 파이프라인 기능 비활성화 */
+                if (isTranslatePage) {
+                    const metricsPanel = document.getElementById('metrics-panel');
+                    if(metricsPanel) metricsPanel.innerText = `[엔진 작동 중] 실시간 통역이 준비되었습니다.`;
+                }
+
+                if (isModelDeployed && !pipelineActive) {
+                    inferentialAnalysis(structuralFeatureVector);
+                }
+            } else {
+                if (isTranslatePage) {
+                    const metricsPanel = document.getElementById('metrics-panel');
+                    if(metricsPanel) metricsPanel.innerText = `[아이들링] 손동작 감지 대기 중...`;
+                }
+            }
+
+            if (isTranslatePage && currentCanvasElement && currentCanvasCtx) {
+                currentCanvasCtx.restore();
+            }
+        }
+
+        async function inferentialAnalysis(features) {
+            const inputTensor = tf.tensor2d([features]);
+            const inferenceResult = aiModelCore.predict(inputTensor);
+            const softmaxProbabilities = await inferenceResult.data();
+            const predictedClassIndex = softmaxProbabilities.indexOf(Math.max(...softmaxProbabilities));
+            const targetedConfidence = softmaxProbabilities[predictedClassIndex];
+
+            const now = Date.now();
+            if (now - lastRankUpdateTime >= 1000) {
+                const ranked = [...softmaxProbabilities]
+                    .map((prob, idx) => ({ label: labelNames[idx], prob: prob }))
+                    .sort((a, b) => b.prob - a.prob);
+
+                const top1 = ranked[0];
+                const top2 = ranked[1];
+                const top3 = ranked[2];
+
+                const etcPercent = ranked.slice(3).reduce((sum, item) => sum + item.prob, 0);
+
+                lastRankHTML = `
+                🏆 1위: ${top1.label} (${(top1.prob * 100).toFixed(1)}%)<br>
+                🥈 2위: ${top2.label} (${(top2.prob * 100).toFixed(1)}%)<br>
+                🥉 3위: ${top3.label} (${(top3.prob * 100).toFixed(1)}%)<br>
+                📦 기타: ${(etcPercent * 100).toFixed(1)}%
+                `;
+                lastRankUpdateTime = now;
+            }
+
+            const learnMetrics = document.getElementById('learn-metrics-panel');
+            if (learnMetrics && document.getElementById('page-learn').classList.contains('active')) {
+                learnMetrics.innerHTML = lastRankHTML;
+            }
+
+            if (targetedConfidence > 0.92) {
+                frameSequenceCounter++;
+                if (frameSequenceCounter >= 25) {
+                   
+                    if (predictedClassIndex === 2) {
+                        rawSyllableTokens = [];
+                        lastRegisteredToken = "";
+                        document.getElementById('sentence-output').innerHTML = `<span style="color:var(--danger); font-weight:bold;">🔥 문장이 전면 초기화되었습니다.</span>`;
+                    } else {
+                        const confirmedWord = labelNames[predictedClassIndex];
+                        if (lastRegisteredToken !== confirmedWord) {
+                            rawSyllableTokens.push(confirmedWord);
+                            lastRegisteredToken = confirmedWord;
+                            renderCombinedHangeul();
+                        }
+                    }
+                    frameSequenceCounter = 0;
+                }
+            } else { frameSequenceCounter = 0; }
+        }
+
+        function combineHangeulAutomata(sourceArray) {
+            if (sourceArray.length === 0) return "카메라 앞에서 수어 자모음을 취하세요.";
+           
+            const choTable = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"];
+            const jungTable = ["ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ", "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ", "ㅙ", "ㅚ", "ㅛ", "ㅜ", "ㅝ", "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ", "ㅣ"];
+            const jongTable = ["", "ㄱ", "ㄲ", "ㄳ", "ㄴ", "ㄵ", "ㄶ", "ㄷ", "ㄹ", "ㄺ", "ㄻ", "ㄼ", "ㄽ", "ㄾ", "ㄿ", "ㅀ", "ㅁ", "ㅂ", "ㅄ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"];
+           
+            const choMap = { "ㄱ":0, "ㄴ":2, "ㄷ":3, "ㄹ":5, "ㅁ":6, "ㅂ":7, "ㅅ":9, "ㅇ":11, "ㅈ":12, "ㅊ":14, "ㅋ":15, "ㅌ":16, "ㅍ":17, "ㅎ":18 };
+            const jongMap = { "ㄱ":1, "ㄴ":4, "ㄷ":7, "ㄹ":8, "ㅁ":16, "ㅂ":17, "ㅅ":19, "ㅇ":21, "ㅈ":22, "ㅊ":23, "ㅋ":24, "ㅌ":25, "ㅍ":26, "ㅎ":27 };
+
+            let resultString = "";
+            let i = 0;
+
+            while (i < sourceArray.length) {
+                let currentToken = sourceArray[i];
+
+                if (currentToken === "안녕하세요" || currentToken === "감사합니다") {
+                    resultString += ` [${currentToken}] `;
+                    i++;
+                    continue;
+                }
+
+                if (!(currentToken in choMap)) {
+                    resultString += currentToken;
+                    i++;
+                    continue;
+                }
+
+                let choIdx = choMap[currentToken];
+
+                if (i + 2 < sourceArray.length && jungTable.includes(sourceArray[i+1]) && sourceArray[i+2] in jongMap) {
+                    let jungIdx = jungTable.indexOf(sourceArray[i+1]);
+                    let jongIdx = jongMap[sourceArray[i+2]];
+
+                    let hangeulBlockCode = 44032 + (choIdx * 588) + (jungIdx * 28) + jongIdx;
+                    resultString += String.fromCharCode(hangeulBlockCode);
+                    i += 3;
+                }
+                else if (i + 1 < sourceArray.length && jungTable.includes(sourceArray[i+1])) {
+                    let jungIdx = jungTable.indexOf(sourceArray[i+1]);
+
+                    let hangeulBlockCode = 44032 + (choIdx * 588) + (jungIdx * 28);
+                    resultString += String.fromCharCode(hangeulBlockCode);
+                    i += 2;
+                }
+                else {
+                    resultString += currentToken;
+                    i++;
+                }
+            }
+            return resultString;
+        }
+
+        function renderCombinedHangeul() {
+            const sentenceOutput = document.getElementById('sentence-output');
+            if (!sentenceOutput) return;
+
+            if (rawSyllableTokens.length === 0) {
+                sentenceOutput.innerText = "카메라 앞에서 수어를 취하세요.";
+                return;
+            }
+
+            const combinedResult = combineHangeulAutomata(rawSyllableTokens);
+            sentenceOutput.innerHTML = `<span class="word-token" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;">✨ 조합 결과: ${combinedResult}</span>`;
+        }
+
+        window.onload = async () => {
+            // 초기 온로드 시 로컬 데이터 연동 대기 제외 (엔진 즉시 활성화)
+            const metricsPanel = document.getElementById('metrics-panel');
+            if (metricsPanel) metricsPanel.innerText = `[대기] 통역기 탭을 누르면 엔진이 구동됩니다.`;
+        };
+    </script>
+</body>
+</html>
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(30, 58, 138, 0.1);
+        }
+
+        header h1 { margin: 0; font-size: 24px; font-weight: 800; cursor: pointer; }
+        .brand-sub { font-size: 14px; color: #93c5fd; font-weight: 400; margin-left: 8px; }
+
+        nav { display: flex; gap: 10px; }
+        nav button {
+            background: none; border: none; color: #93c5fd; padding: 10px 18px;
+            font-size: 15px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.2s ease;
+        }
+        nav button:hover { color: white; background-color: rgba(255, 255, 255, 0.1); }
+        nav button.active { color: white; background-color: var(--accent); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .page { display: none; }
+        .page.active { display: block !important; }
+
+        .intro-card {
+            background: var(--card-bg); padding: 45px; border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); text-align: center; line-height: 1.9;
+        }
+        .intro-card h2 { color: var(--primary); font-size: 28px; font-weight: 800; margin-bottom: 25px; }
+        .intro-card p { font-size: 16px; color: #334155; margin-bottom: 15px; }
+        .brand-highlight { color: white; background-color: var(--accent); padding: 3px 10px; border-radius: 6px; font-weight: 700; }
+        .text-highlight { color: var(--accent); font-weight: 700; }
+
         .app-layout { display: grid; grid-template-columns: 1fr 380px; gap: 25px; }
         .vision-box { background: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04); text-align: center; }
        
